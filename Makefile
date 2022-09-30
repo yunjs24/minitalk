@@ -1,32 +1,32 @@
-SOURCES = server.c client.c
-OBJECTS = $(SOURCES:.c=.o)
+CC				=	cc
+CFLAG			=	-Wall -Wextra -Werror
+NAME			=	minitalk
 
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror
-
-all: server client
-
-bonus: server client
-
-server: server.o libft
-	$(CC) -o $@ $< -Llibft -lft
-
-client: client.o libft
-	$(CC) -o $@ $< -Llibft -lft
-
-%.o: %.c
-	$(CC) -c $(CFLAGS) $?
-
-libft:
-	make -C libft
+FT_PRINTF_DIR	=	./ft_printf
+LIBFTPRINTF		=	$(FT_PRINTF_DIR)/libftprintf.a
+			
+all:
+	@make -C ./ft_printf
+	@$(CC) $(CFLAG) server.c utils.c $(LIBFTPRINTF) $^ -o server
+	@$(CC) $(CFLAG) client.c utils.c $(LIBFTPRINTF) $^ -o client 
 
 clean:
-	rm -f $(OBJECTS)
-	make -C libft clean
-	
+	@make -C $(FT_PRINTF_DIR) clean
+	@rm -f server
+	@rm -f client
+
 fclean: clean
-	rm -f server client libft/libft.a
+	@make -C $(FT_PRINTF_DIR) fclean
 
-re: fclean all
+re: 
+	@make -C $(FT_PRINTF_DIR fclean)
+	make fclean
+	make all
 
-.PHONY: all bonus libft clean fclean re
+bonus:
+	make fclean
+	@make -C $(FT_PRINTF_DIR)
+	@$(CC) $(CFLAG) server_bonus.c utils.c $(LIBFTPRINTF) $^ -o server
+	@$(CC) $(CFLAG) client_bonus.c utils.c $(LIBFTPRINTF) $^ -o client
+
+.PHONY:	all clean fclean bonus re

@@ -1,17 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: junsyun <junsyun@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 03:30:33 by junsyun           #+#    #+#             */
-/*   Updated: 2022/09/30 12:06:35 by junsyun          ###   ########.fr       */
+/*   Updated: 2022/09/30 12:48:19 by junsyun          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
-
 static int	g_received;
 
 static void	handler(int number, siginfo_t *info, void *ucontext)
@@ -32,7 +31,7 @@ static pid_t	get_pid_integer(char *str)
 	return (pid);
 }
 
-static size_t	ft_strlen(char *str)
+static size_t	get_msg_length(char *str)
 {
 	size_t	length;
 
@@ -80,8 +79,6 @@ int	main(int argc, char *argv[])
 	if (argc != 3)
 		return (1);
 	pid = (pid_t)get_pid_integer(argv[1]);
-	if (pid < 100 || pid > 9999998)
-		ft_printf("Error : Bad PID !\n");
 	msg = argv[2];
 	sig_act.sa_flags = SA_SIGINFO;
 	sig_act.__sigaction_u.__sa_sigaction = handler;
@@ -89,5 +86,5 @@ int	main(int argc, char *argv[])
 		;
 	while (sigaction(SIGUSR1, &sig_act, NULL))
 		;
-	message(msg, ft_strlen(msg), pid);
+	message(msg, get_msg_length(msg), pid);
 }

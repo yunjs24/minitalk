@@ -1,16 +1,14 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.c                                           :+:      :+:    :+:   */
+/*   server_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: junsyun <junsyun@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 04:06:35 by junsyun           #+#    #+#             */
-/*   Updated: 2022/09/30 12:19:00 by junsyun          ###   ########.fr       */
+/*   Updated: 2022/09/30 12:47:52 by junsyun          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "minitalk.h"
 
 static void	handler(int sig, siginfo_t *info, void *ucontext)
 {
@@ -78,12 +76,9 @@ static char	*get_pid_string(pid_t pid)
 
 static void	print_pid(pid_t pid)
 {
-	size_t	length;
-	char	*str;
-
-	str = get_pid_string(pid);
-	length = get_pid_length(pid);
-	ft_printf("");
+	char	*pid_str;
+	pid_str = get_pid_string(pid);
+	ft_printf("This Server\'s PID : %s\n", str);
 	free(str);
 }
 
