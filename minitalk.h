@@ -6,7 +6,7 @@
 /*   By: junsyun <junsyun@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 03:23:39 by junsyun           #+#    #+#             */
-/*   Updated: 2022/09/30 12:27:19 by junsyun          ###   ########.fr       */
+/*   Updated: 2022/10/01 22:30:03 by junsyun          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,15 @@
 # include <signal.h>
 # include <stdlib.h>
 # include <stdarg.h>
+# include "ft_printf/ft_printf.h"
 
-int				ft_putchar(char c);
-int				ft_putnbr_base(unsigned long n);
-int				ft_putnbr(int n);
-int				ft_putstr(char *s);
-int				ft_atoi(const char *str);
-int				ft_printf(const char *format, ...);
+int	ft_atoi(const char *str);
+int	ft_printf(const char *format, ...);
 
-static size_t	ft_strlen(char *str);
+pid_t	get_pid_integer(char *str);
+void	err_exit(char *str);
+void	success_exit(char *str);
+void	exec_kill(pid_t pid, int sig);
+// size_t	ft_strlen(char *str);
+
 #endif

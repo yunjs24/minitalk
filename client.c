@@ -5,44 +5,24 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: junsyun <junsyun@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/27 03:30:33 by junsyun           #+#    #+#             */
-/*   Updated: 2022/09/30 12:06:35 by junsyun          ###   ########.fr       */
+/*   Created: 2022/09/30 11:11:44 by junsyun           #+#    #+#             */
+/*   Updated: 2022/10/01 22:31:13 by junsyun          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-static int	g_received;
+static int	g_rcv_status;
 
-static void	handler(int number, siginfo_t *info, void *ucontext)
+static void	handler(int sig, siginfo_t *info, void *ucontext)
 {
-	(void)number;
+	(void)sig;
 	(void)info;
 	(void)ucontext;
-	g_received = 1;
+	g_rcv_status = 1;
 }
 
-static pid_t	get_pid_integer(char *str)
-{
-	pid_t	pid;
-
-	pid = 0;
-	while (*str)
-		pid = pid * 10 + *str++ - '0';
-	return (pid);
-}
-
-static size_t	ft_strlen(char *str)
-{
-	size_t	length;
-
-	length = 0;
-	while (str[length])
-		length++;
-	return (length);
-}
-
-static void	message(char *msg, size_t length, pid_t pid)
+static void	send_message(char *msg, size_t length, pid_t pid)
 {
 	size_t	i;
 	size_t	j;
@@ -55,16 +35,15 @@ static void	message(char *msg, size_t length, pid_t pid)
 		j = 0;
 		while (j < 8)
 		{
-			bit = msg[i] >> j & 1;
-			g_received = 0;
+			bit = (msg[i] >> j) & 1;
+			g_rcv_status = 0;
 			if (bit % 2 == 0)
 				signal = SIGUSR1;
 			else
 				signal = SIGUSR2;
-			while (kill(pid, signal) != 0)
-				;
-			while (!g_received)
-				;
+			exec_kill(pid, signal);
+			while (!g_rcv_status)
+				usleep(50);
 			j++;
 		}
 		i++;
@@ -81,13 +60,13 @@ int	main(int argc, char *argv[])
 		return (1);
 	pid = (pid_t)get_pid_integer(argv[1]);
 	if (pid < 100 || pid > 9999998)
-		ft_printf("Error : Bad PID !\n");
+		err_exit("Error : Bad PID !");
 	msg = argv[2];
 	sig_act.sa_flags = SA_SIGINFO;
 	sig_act.__sigaction_u.__sa_sigaction = handler;
 	while (sigemptyset(&sig_act.sa_mask) != 0)
-		;
+		usleep(50);
 	while (sigaction(SIGUSR1, &sig_act, NULL))
-		;
-	message(msg, ft_strlen(msg), pid);
+		usleep(50);
+	send_message(msg, ft_strlen(msg), pid);
 }

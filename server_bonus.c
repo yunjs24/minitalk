@@ -5,36 +5,39 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: junsyun <junsyun@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/27 04:06:35 by junsyun           #+#    #+#             */
-/*   Updated: 2022/09/30 12:47:52 by junsyun          ###   ########.fr       */
+/*   Created: 2022/09/30 11:34:27 by junsyun           #+#    #+#             */
+/*   Updated: 2022/10/02 00:22:36 by junsyun          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "minitalk.h"
 
 static void	handler(int sig, siginfo_t *info, void *ucontext)
 {
 	static int				i;
 	static unsigned char	c;
-	static int				pid;
+	static int				client_pid;
 	int						bit;
-	int						crutch;
+	int						kill_status;
 
 	(void)ucontext;
 	if (sig == SIGUSR1)
 		bit = 0;
 	else
 		bit = 1;
-	c = c | bit << i;
+	c = c | (bit << i);
 	if (i == 8 - 1)
 	{
 		write(1, &c, 1);
 		c = 0;
+		kill(client_pid, SIGUSR2);
 	}
 	i = (i + 1) % 8;
 	if (info->si_pid != 0)
-		pid = info->si_pid;
-	crutch = -1;
-	while (crutch != 0)
-		crutch = kill(pid, SIGUSR1);
+		client_pid = info->si_pid;
+	kill_status = -1;
+	while (kill_status != 0)
+		kill_status = kill(client_pid, SIGUSR1);
 }
 
 static size_t	get_pid_length(pid_t pid)
@@ -78,8 +81,8 @@ static void	print_pid(pid_t pid)
 {
 	char	*pid_str;
 	pid_str = get_pid_string(pid);
-	ft_printf("This Server\'s PID : %s\n", str);
-	free(str);
+	ft_printf("This Server\'s PID : %s\n", pid_str);
+	free(pid_str);
 }
 
 int	main(void)

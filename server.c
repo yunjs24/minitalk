@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: junsyun <junsyun@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/27 04:06:35 by junsyun           #+#    #+#             */
-/*   Updated: 2022/09/30 12:19:00 by junsyun          ###   ########.fr       */
+/*   Created: 2022/09/30 19:40:17 by junsyun           #+#    #+#             */
+/*   Updated: 2022/10/01 23:51:54 by junsyun          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,14 @@ static void	handler(int sig, siginfo_t *info, void *ucontext)
 	static unsigned char	c;
 	static int				pid;
 	int						bit;
-	int						crutch;
+	int						kill_status;
 
 	(void)ucontext;
 	if (sig == SIGUSR1)
 		bit = 0;
 	else
 		bit = 1;
-	c = c | bit << i;
+	c = c | (bit << i);
 	if (i == 8 - 1)
 	{
 		write(1, &c, 1);
@@ -34,9 +34,11 @@ static void	handler(int sig, siginfo_t *info, void *ucontext)
 	i = (i + 1) % 8;
 	if (info->si_pid != 0)
 		pid = info->si_pid;
-	crutch = -1;
-	while (crutch != 0)
-		crutch = kill(pid, SIGUSR1);
+	kill_status = -1;
+	while (kill_status != 0)
+		kill_status = kill(pid, SIGUSR1);
+	while (kill_status != 0)
+		kill_status = kill(pid, SIGUSR2);
 }
 
 static size_t	get_pid_length(pid_t pid)
@@ -78,13 +80,10 @@ static char	*get_pid_string(pid_t pid)
 
 static void	print_pid(pid_t pid)
 {
-	size_t	length;
-	char	*str;
-
-	str = get_pid_string(pid);
-	length = get_pid_length(pid);
-	ft_printf("");
-	free(str);
+	char	*pid_str;
+	pid_str = get_pid_string(pid);
+	ft_printf("This Server\'s PID : %s\n", pid_str);
+	free(pid_str);
 }
 
 int	main(void)
